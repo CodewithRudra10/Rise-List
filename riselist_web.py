@@ -17,7 +17,6 @@ def add_task():
     if task_text:
         tasks.append({"text": task_text, "done": False})
         st.success(f"✅ Added: {task_text}")
-        st.session_state.new_task = ""
         st.rerun()
 
 def mark_done(index):
