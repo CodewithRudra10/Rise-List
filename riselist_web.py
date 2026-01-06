@@ -9,7 +9,7 @@ st.set_page_config(page_title="RiseList", page_icon="🎯", layout="centered")
 
 st.title("RiseList 🎯")
 st.markdown("**One task at a time. Rise.**")
-st.markdown("Built by Rudra — Class 9 student & Future CEO in training 💪")
+st.markdown("--Built by Rudra--")
 
 # Initialize tasks in session state (so they remember while app is open)
 if "tasks" not in st.session_state:
