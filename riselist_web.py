@@ -2,7 +2,7 @@ import streamlit as st
 import json
 
 # RiseList 🎯 - Permanent Save (URL-based)
-# Web Version v2.0 - Built by Rudra (Future CEO)
+# Web Version v2.0 - Built by Rudra 
 # January 2026
 # One task at a time. Rise. Tasks saved in URL!
 
