@@ -10,7 +10,7 @@ st.set_page_config(page_title="RiseList 🎯", page_icon="🎯", layout="centere
 
 st.title("RiseList 🎯")
 st.markdown("**One task at a time. Rise.**")
-st.markdown("Built by Rudra — Class 9 student & Future CEO in training 💪")
+st.markdown("Built by Rudra ")
 st.markdown("---")
 
 # Load tasks from URL query params
