@@ -3,7 +3,7 @@ import time
 import threading
 
 # RiseList 🎯 - With Pomodoro Timer
-# Web Version v2.1 - Built by Rudra (Future CEO)
+# Web Version v2.1 - Built by Rudra 
 # January 2026
 # One task at a time. Rise. Now with focused work sessions!
 
