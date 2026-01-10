@@ -1,8 +1,7 @@
 import streamlit as st
 import time
-import threading
 
-# RiseList 🎯 - With Pomodoro Timer
+# RiseList 🎯 - With Stable Pomodoro Timer
 # Web Version v2.1 - Built by Rudra 
 # January 2026
 # One task at a time. Rise. Now with focused work sessions!
@@ -21,36 +20,60 @@ if "tasks" not in st.session_state:
 tasks = st.session_state.tasks
 
 # Pomodoro state
-if "pomo_running" not in st.session_state:
-    st.session_state.pomo_running = False
-    st.session_state.pomo_time_left = 25 * 60  # 25 minutes in seconds
+if "pomo_start_time" not in st.session_state:
+    st.session_state.pomo_start_time = None
+    st.session_state.pomo_duration = 25 * 60  # 25 min work
     st.session_state.pomo_phase = "work"  # "work" or "break"
-    st.session_state.pomo_thread = None
+    st.session_state.pomo_paused = False
+    st.session_state.pomo_pause_time = 0
 
 # Pomodoro functions
-def pomo_timer_thread():
-    while st.session_state.pomo_running and st.session_state.pomo_time_left > 0:
-        time.sleep(1)
-        st.session_state.pomo_time_left -= 1
-        # Update UI
-        st.rerun()
-
 def start_pomo():
-    if not st.session_state.pomo_running:
-        st.session_state.pomo_running = True
-        st.session_state.pomo_thread = threading.Thread(target=pomo_timer_thread)
-        st.session_state.pomo_thread.start()
+    if st.session_state.pomo_start_time is None or st.session_state.pomo_paused:
+        if st.session_state.pomo_paused:
+            # Resume from pause
+            st.session_state.pomo_start_time = time.time() - st.session_state.pomo_pause_time
+            st.session_state.pomo_paused = False
+        else:
+            st.session_state.pomo_start_time = time.time()
         st.success("Pomodoro started! Focus time 💪")
 
 def pause_pomo():
-    st.session_state.pomo_running = False
-    st.info("Pomodoro paused. Take a breath!")
+    if st.session_state.pomo_start_time is not None and not st.session_state.pomo_paused:
+        st.session_state.pomo_pause_time = time.time() - st.session_state.pomo_start_time
+        st.session_state.pomo_paused = True
+        st.info("Pomodoro paused. Take a breath!")
 
 def reset_pomo():
-    st.session_state.pomo_running = False
-    st.session_state.pomo_time_left = 25 * 60
+    st.session_state.pomo_start_time = None
+    st.session_state.pomo_paused = False
+    st.session_state.pomo_pause_time = 0
+    st.session_state.pomo_duration = 25 * 60
     st.session_state.pomo_phase = "work"
     st.info("Pomodoro reset!")
+
+# Calculate remaining time
+def get_remaining_time():
+    if st.session_state.pomo_start_time is None:
+        return st.session_state.pomo_duration
+    elapsed = time.time() - st.session_state.pomo_start_time
+    remaining = st.session_state.pomo_duration - elapsed
+    if remaining <= 0:
+        # Phase switch (simple for now)
+        if st.session_state.pomo_phase == "work":
+            st.session_state.pomo_phase = "break"
+            st.session_state.pomo_duration = 5 * 60
+            st.session_state.pomo_start_time = time.time()
+            st.balloons()
+            st.success("Work session over! Take a 5-min break 🍅")
+        else:
+            st.session_state.pomo_phase = "work"
+            st.session_state.pomo_duration = 25 * 60
+            st.session_state.pomo_start_time = time.time()
+            st.balloons()
+            st.success("Break over! Time to rise again! 💪")
+        remaining = st.session_state.pomo_duration
+    return max(0, remaining)
 
 # Sidebar - Add task + Pomodoro controls
 with st.sidebar:
@@ -60,9 +83,10 @@ with st.sidebar:
 
     st.markdown("---")
     st.header("🍅 Pomodoro Timer")
-    mins, secs = divmod(st.session_state.pomo_time_left, 60)
+    remaining = get_remaining_time()
+    mins, secs = divmod(int(remaining), 60)
     st.metric("Time Left", f"{mins:02d}:{secs:02d}", delta_color="off")
-    st.caption(f"Phase: {'Work' if st.session_state.pomo_phase == 'work' else 'Break'}")
+    st.caption(f"Phase: {'Work (25 min)' if st.session_state.pomo_phase == 'work' else 'Break (5 min)'}")
 
     col1, col2, col3 = st.columns(3)
     with col1:
