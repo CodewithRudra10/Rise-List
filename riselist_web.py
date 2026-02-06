@@ -3,7 +3,7 @@ from PIL import Image
 import io
 
 # Load logo
-logo = Image.open("rise-list logo.png")  
+logo = Image.open("rise-list logo.png.jpg")  
 
 # Optional: resize for favicon
 logo_favicon = logo.resize((32, 32))
