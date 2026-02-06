@@ -45,7 +45,6 @@ def add_task():
         tasks.append({"text": task_text, "done": False})
         st.success(f"✅ Added: {task_text}")
         st.session_state.new_task = ""
-        st.rerun()
     else:
         st.warning("⚠️ Empty task skipped!")
 
