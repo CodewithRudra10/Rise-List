@@ -3,7 +3,7 @@ from PIL import Image
 import io
 
 # Load logo
-logo = Image.open("rise-list logo.png.jpg")  
+logo = Image.open("rise-list logo.png")  
 
 # Optional: resize for favicon
 logo_favicon = logo.resize((32, 32))
@@ -27,7 +27,7 @@ import streamlit as st
 
 st.set_page_config(
     page_title="RiseList – Rise Every Day",
-    page_icon="riselist-logo-small.png.jpg", 
+    page_icon="riselist-logo-small.png", 
     layout="wide"
 )
 
