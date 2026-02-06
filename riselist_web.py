@@ -1,7 +1,28 @@
 import streamlit as st
+from PIL import Image
+import io
 
-# RiseList 🎯 - Final Stable Version (No Errors)
-# Web Version v2.1 - Built by Rudra (Future CEO)
+# Load logo
+logo = Image.open("rise-list logo.png")  
+
+# Optional: resize for favicon
+logo_favicon = logo.resize((32, 32))
+
+# Convert to bytes for favicon
+buffer = io.BytesIO()
+logo_favicon.save(buffer, format="PNG")
+favicon_bytes = buffer.getvalue()
+
+st.set_page_config(
+    page_title="RiseList – Rise Every Day",
+    page_icon=favicon_bytes,           # ← this sets the tab icon
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+import streamlit as st
+
+# RiseList 🎯 - Final Stable Version 
+# Web Version v2.1 - Built by Rudra 
 # January 2026
 
 st.set_page_config(page_title="RiseList 🎯", page_icon="🎯", layout="centered")
