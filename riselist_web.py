@@ -15,7 +15,7 @@ favicon_bytes = buffer.getvalue()
 
 st.set_page_config(
     page_title="RiseList – Rise Every Day",
-    page_icon=favicon_bytes,           # ← this sets the tab icon
+    page_icon=favicon_bytes,           
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -25,7 +25,11 @@ import streamlit as st
 # Web Version v2.1 - Built by Rudra 
 # January 2026
 
-st.set_page_config(page_title="RiseList 🎯", page_icon="🎯", layout="centered")
+st.set_page_config(
+    page_title="RiseList – Rise Every Day",
+    page_icon="riselist-logo-small.png.jpg", 
+    layout="wide"
+)
 
 st.title("RiseList 🎯")
 st.markdown("**One task at a time. Rise.**")
