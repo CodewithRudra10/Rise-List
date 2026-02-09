@@ -1,13 +1,14 @@
 import streamlit as st
 import json
 import os
-
+from datetime import datetime, timedelta
 # === Paste your Task + TaskManager code here (the block you shared) ===
 class Task:
-    def __init__(self, title, priority):
+    def __init__(self, title, priority,due_date=None):
         self.title = title
         self.priority = priority
         self.done = False
+        self.due_date=due_date if due_date else "No due date"
 
     def __str__(self):
         status = "Done" if self.done else "Pending"
@@ -19,10 +20,18 @@ class TaskManager:
         self.filename = "tasks.json"
         self.load_tasks()  # auto-load on start
 # Add task input
-col1, col2 = st.columns([3, 1])
+# Add task input
+col1, col2, col3 = st.columns([3, 1, 2])  # adjust columns
 new_title = col1.text_input("New Task", placeholder="e.g. Study Physics")
 priority = col2.selectbox("Priority", ["High", "Medium", "Low"])
+due_date = col3.date_input("Due Date (optional)", value=None)  # optional
 
+if st.button("Add Task") and new_title:
+    due_str = due_date.strftime("%Y-%m-%d") if due_date else None
+    added_task = manager.add_task(new_title, priority, due_str)  # pass due_date
+    st.success(f"🎉 Task '{added_task.title}' added! Priority: {added_task.priority} | Due: {added_task.due_date or 'None'}")
+    st.balloons()
+    
 if st.button("Add Task") and new_title:
     added_task = manager.add_task(new_title, priority)  # call method
     st.success(f"🎉 Task '{added_task.title}' added successfully! Priority: {added_task.priority}")
@@ -47,46 +56,46 @@ if st.button("Delete Task") and 0 <= delete_index < len(manager.tasks):
                 st.write(f"{i+1}. {task}")
 
     def save_tasks(self):
-        data = [
-            {
-                "title": t.title,
-                "priority": t.priority,
-                "done": t.done
-            } for t in self.tasks
-        ]
-        with open(self.filename, "w") as f:
-            json.dump(data, f, indent=4)
-        print("Tasks saved!✅")  # for console debug
-
+     def save_tasks(self):
+    data = [
+        {
+            "title": t.title,
+            "priority": t.priority,
+            "done": t.done,
+            "due_date": t.due_date if t.due_date != "No due date" else None
+        } for t in self.tasks
+    ]
+    with open(self.filename, "w") as f:
+        json.dump(data, f, indent=4)
     def load_tasks(self):
-        if os.path.exists(self.filename):
-            with open(self.filename, "r") as f:
-                data = json.load(f)
-            self.tasks = []
-            for item in data:
-                task = Task(item["title"], item["priority"])
-                task.done = item["done"]
-                self.tasks.append(task)
-            print("Tasks loaded!")
-        else:
-            print("No saved tasks yet.")
+       def load_tasks(self):
+    if os.path.exists(self.filename):
+        with open(self.filename, "r") as f:
+            data = json.load(f)
+        self.tasks = []
+        for item in data:
+            task = Task(item["title"], item["priority"], item.get("due_date"))
+            task.done = item["done"]
+            self.tasks.append(task)
+        print("Tasks loaded!")
+    else:
+        print("No saved tasks yet.")
+        
             st.subheader("Weekly Progress Calendar")
+st.subheader("Weekly Progress")
 
-# Simple calendar picker
-selected_date = st.date_input("Select a week to view", value=datetime.date.today())
+today = datetime.now().date()
+week_start = today - timedelta(days=today.weekday())  # Monday
+week_end = week_start + timedelta(days=6)
 
-# Filter tasks for the selected week (simple version)
-week_start = selected_date - datetime.timedelta(days=selected_date.weekday())
-week_end = week_start + datetime.timedelta(days=6)
-
-week_tasks = [t for t in manager.tasks if week_start <= t.due_date <= week_end]  # assuming due_date is datetime
+week_tasks = [t for t in manager.tasks if t.due_date and week_start <= datetime.strptime(t.due_date, "%Y-%m-%d").date() <= week_end]
 
 if not week_tasks:
-    st.info("No tasks this week — add some!")
+    st.info("No tasks this week — add some with due dates!")
 else:
+    st.write(f"**Week: {week_start} to {week_end}**")
     for i, task in enumerate(week_tasks):
-        st.write(f"{i+1}. {task} (Due: {task.due_date.strftime('%Y-%m-%d')})")
-
+        st.write(f"- {task} (Due: {task.due_date})")
 # === Streamlit App UI starts here ===
 st.title("RiseList – Rise Every Day")
 # === RiseList Logo (top of page) ===
