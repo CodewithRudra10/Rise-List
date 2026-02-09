@@ -96,7 +96,7 @@ class TaskManager:
 st.set_page_config(page_title="RiseList", layout="wide")
 
 # Logo at the top
-logo_path = "riselist-logo.png"
+logo_path = "RiseList logo.img.png"
 if os.path.exists(logo_path):
     st.image(logo_path, width=220, use_column_width="auto")
 else:
