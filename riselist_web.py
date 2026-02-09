@@ -18,18 +18,26 @@ class TaskManager:
         self.tasks = []
         self.filename = "tasks.json"
         self.load_tasks()  # auto-load on start
+# Add task input
+col1, col2 = st.columns([3, 1])
+new_title = col1.text_input("New Task", placeholder="e.g. Study Physics")
+priority = col2.selectbox("Priority", ["High", "Medium", "Low"])
 
-    def add_task(self, title, priority):
-        task = Task(title, priority)
-        self.tasks.append(task)
-        self.save_tasks()
-        st.success(f"Added: {task}")
+if st.button("Add Task") and new_title:
+    added_task = manager.add_task(new_title, priority)  # call method
+    st.success(f"🎉 Task '{added_task.title}' added successfully! Priority: {added_task.priority}")
+    st.balloons()  # fun animation
 
     def mark_done(self, index):
         if 0 <= index < len(self.tasks):
             self.tasks[index].done = True
             self.save_tasks()
             st.success(f"Marked '{self.tasks[index].title}' as Done!")
+    delete_index = st.number_input("Delete task (number)", min_value=0, step=1)
+if st.button("Delete Task") and 0 <= delete_index < len(manager.tasks):
+    removed = manager.tasks.pop(delete_index)
+    manager.save_tasks()
+    st.error(f"Deleted task: '{removed.title}'")
 
     def show_all(self):
         if not self.tasks:
@@ -62,6 +70,22 @@ class TaskManager:
             print("Tasks loaded!")
         else:
             print("No saved tasks yet.")
+            st.subheader("Weekly Progress Calendar")
+
+# Simple calendar picker
+selected_date = st.date_input("Select a week to view", value=datetime.date.today())
+
+# Filter tasks for the selected week (simple version)
+week_start = selected_date - datetime.timedelta(days=selected_date.weekday())
+week_end = week_start + datetime.timedelta(days=6)
+
+week_tasks = [t for t in manager.tasks if week_start <= t.due_date <= week_end]  # assuming due_date is datetime
+
+if not week_tasks:
+    st.info("No tasks this week — add some!")
+else:
+    for i, task in enumerate(week_tasks):
+        st.write(f"{i+1}. {task} (Due: {task.due_date.strftime('%Y-%m-%d')})")
 
 # === Streamlit App UI starts here ===
 st.title("RiseList – Rise Every Day")
