@@ -114,7 +114,7 @@ manager = st.session_state.manager
 # === Add new task ===
 st.subheader("Add a Task")
 col1, col2, col3 = st.columns([3, 1.5, 2])
-new_title = col1.text_input("Task Title", placeholder="e.g. Study Physics")
+new_title = col1.text_input("Task Title", placeholder="e.g. Add a Task to Get started!")
 priority = col2.selectbox("Priority", ["High", "Medium", "Low"])
 due_date = col3.date_input("Due Date (optional)", value=None)
 
