@@ -1,95 +1,95 @@
 import streamlit as st
-from PIL import Image
-import io
+import json
+import os
 
-# Load logo
-logo = Image.open("rise-list logo.png")  
+# === Paste your Task + TaskManager code here (the block you shared) ===
+class Task:
+    def __init__(self, title, priority):
+        self.title = title
+        self.priority = priority
+        self.done = False
 
-# Optional: resize for favicon
-logo_favicon = logo.resize((32, 32))
+    def __str__(self):
+        status = "Done" if self.done else "Pending"
+        return f"[{status}] {self.title} (Priority: {self.priority})"
 
-# Convert to bytes for favicon
-buffer = io.BytesIO()
-logo_favicon.save(buffer, format="PNG")
-favicon_bytes = buffer.getvalue()
+class TaskManager:
+    def __init__(self):
+        self.tasks = []
+        self.filename = "tasks.json"
+        self.load_tasks()  # auto-load on start
 
-st.set_page_config(
-    page_title="RiseList – Rise Every Day",
-    page_icon=favicon_bytes,           
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-import streamlit as st
+    def add_task(self, title, priority):
+        task = Task(title, priority)
+        self.tasks.append(task)
+        self.save_tasks()
+        st.success(f"Added: {task}")
 
-# RiseList 🎯 - Final Stable Version 
-# Web Version v2.1 - Built by Rudra 
-# January 2026
+    def mark_done(self, index):
+        if 0 <= index < len(self.tasks):
+            self.tasks[index].done = True
+            self.save_tasks()
+            st.success(f"Marked '{self.tasks[index].title}' as Done!")
 
-st.set_page_config(
-    page_title="RiseList – Rise Every Day",
-    page_icon="riselist-logo-small.png", 
-    layout="wide"
-)
+    def show_all(self):
+        if not self.tasks:
+            st.info("No tasks yet — add one!")
+        else:
+            for i, task in enumerate(self.tasks):
+                st.write(f"{i+1}. {task}")
 
-st.title("RiseList 🎯")
-st.markdown("**One task at a time. Rise.**")
-st.markdown("Built by Rudra")
-st.markdown("---")
+    def save_tasks(self):
+        data = [
+            {
+                "title": t.title,
+                "priority": t.priority,
+                "done": t.done
+            } for t in self.tasks
+        ]
+        with open(self.filename, "w") as f:
+            json.dump(data, f, indent=4)
+        print("Tasks saved!")  # for console debug
 
-# Initialize tasks (must be before using them)
-if "tasks" not in st.session_state:
-    st.session_state.tasks = []
+    def load_tasks(self):
+        if os.path.exists(self.filename):
+            with open(self.filename, "r") as f:
+                data = json.load(f)
+            self.tasks = []
+            for item in data:
+                task = Task(item["title"], item["priority"])
+                task.done = item["done"]
+                self.tasks.append(task)
+            print("Tasks loaded!")
+        else:
+            print("No saved tasks yet.")
 
-tasks = st.session_state.tasks
+# === Streamlit App UI starts here ===
+st.title("RiseList – Rise Every Day")
 
-# Define functions FIRST (before using them)
-def add_task():
-    task_text = st.session_state.new_task.strip()
-    if task_text:
-        tasks.append({"text": task_text, "done": False})
-        st.success(f"✅ Added: {task_text}")
-        st.session_state.new_task = ""
-    else:
-        st.warning("⚠️ Empty task skipped!")
+# Create or load the manager (use session_state to keep it between reruns)
+if "task_manager" not in st.session_state:
+    st.session_state.task_manager = TaskManager()
 
-def mark_done(index):
-    if 0 <= index < len(tasks):
-        tasks[index]["done"] = True
-        st.success("🎉 Task completed! Keep rising!")
-        st.rerun()
+manager = st.session_state.task_manager
 
-def delete_task(index):
-    if 0 <= index < len(tasks):
-        removed = tasks.pop(index)
-        st.success(f"🗑️ Deleted: {removed['text']}")
-        st.rerun()
+# Input for new task
+col1, col2 = st.columns([3, 1])
+with col1:
+    new_title = st.text_input("New Task", placeholder="e.g. Study Physics")
+with col2:
+    priority = st.selectbox("Priority", ["High", "Medium", "Low"])
 
-# Sidebar - Add task
-with st.sidebar:
-    st.header("➕ Add New Task")
-    st.text_input("Enter task", key="new_task", placeholder="e.g., Code for 1 hour")
-    st.button("Add Task", on_click=add_task, type="primary", use_container_width=True)
+if st.button("Add Task") and new_title:
+    manager.add_task(new_title, priority)
 
-# Main area - View tasks
-st.header("📋 Your Tasks")
+# Show all tasks
+st.subheader("Your Tasks")
+manager.show_all()
 
-if not tasks:
-    st.info("No tasks yet. Add one to start rising! 🚀")
-else:
-    for i, task in enumerate(tasks):
-        col1, col2, col3 = st.columns([6, 1, 1])
-        with col1:
-            if task["done"]:
-                st.write(f"~~{i+1}. {task['text']}~~ ✅")
-            else:
-                st.write(f"{i+1}. ○ {task['text']}")
-        with col2:
-            if not task["done"]:
-                if st.button("Done", key=f"done_{i}"):
-                    mark_done(i)
-        with col3:
-            if st.button("Delete", key=f"del_{i}"):
-                delete_task(i)
+# Mark done (simple index input — can improve later)
+done_index = st.number_input("Mark task as Done (enter number)", min_value=0, step=1)
+if st.button("Mark Done") and 0 <= done_index < len(manager.tasks):
+    manager.mark_done(done_index)
 
 # Footer
 st.markdown("---")
