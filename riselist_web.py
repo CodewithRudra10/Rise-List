@@ -119,7 +119,7 @@ priority = col2.selectbox("Priority", ["High", "Medium", "Low"])
 due_date = col3.date_input("Due Date (optional)", value=None)
 
 if st.button("➕ Add Task", type="primary") and new_title.strip():
-    due_str = due_date.strftime("%Y-%m-%d") if due_date else None
+    due_str = due_date.strftime("%d-%m-%Y") if due_date else None
     added = manager.add_task(new_title.strip(), priority, due_str)
     st.success(f"🎉 Task '{added.title}' added successfully!")
     st.balloons()
@@ -151,7 +151,7 @@ week_end = week_start + timedelta(days=6)
 week_tasks = [
     t for t in manager.tasks
     if t.due_date != "No due date"
-    and week_start <= datetime.strptime(t.due_date, "%Y-%m-%d").date() <= week_end
+    and week_start <= datetime.strptime(t.due_date, "%d-%m-%Y").date() <= week_end
 ]
 
 if not week_tasks:
