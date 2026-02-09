@@ -66,7 +66,7 @@ class TaskManager:
 # === Streamlit App UI starts here ===
 st.title("RiseList – Rise Every Day")
 # === RiseList Logo (top of page) ===
-logo_path = "RiseList logo.img"
+logo_path = "RiseList logo.img.png"
 
 if os.path.exists(logo_path):
     st.image(logo_path, width=180, use_column_width="auto", caption="RiseList – Rise Every Day")
