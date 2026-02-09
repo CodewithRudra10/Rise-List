@@ -56,7 +56,7 @@ if st.button("Delete Task") and 0 <= delete_index < len(manager.tasks):
                 st.write(f"{i+1}. {task}")
 
     def save_tasks(self):
-     def save_tasks(self):
+    def save_tasks(self):
     data = [
         {
             "title": t.title,
