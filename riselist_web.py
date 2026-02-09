@@ -65,6 +65,13 @@ class TaskManager:
 
 # === Streamlit App UI starts here ===
 st.title("RiseList – Rise Every Day")
+# === RiseList Logo (top of page) ===
+logo_path = "RiseList logo.img"
+
+if os.path.exists(logo_path):
+    st.image(logo_path, width=180, use_column_width="auto", caption="RiseList – Rise Every Day")
+else:
+    st.caption("[Logo missing – upload riselist-logo.png to repo]")
 
 # Create or load the manager (use session_state to keep it between reruns)
 if "task_manager" not in st.session_state:
