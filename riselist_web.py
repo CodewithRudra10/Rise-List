@@ -48,7 +48,7 @@ class TaskManager:
         ]
         with open(self.filename, "w") as f:
             json.dump(data, f, indent=4)
-        print("Tasks saved!")  # for console debug
+        print("Tasks saved!✅")  # for console debug
 
     def load_tasks(self):
         if os.path.exists(self.filename):
@@ -75,7 +75,7 @@ manager = st.session_state.task_manager
 # Input for new task
 col1, col2 = st.columns([3, 1])
 with col1:
-    new_title = st.text_input("New Task", placeholder="e.g. Study Physics")
+    new_title = st.text_input("New Task", placeholder="e.g. Add a Task to get Started!")
 with col2:
     priority = st.selectbox("Priority", ["High", "Medium", "Low"])
 
@@ -90,6 +90,8 @@ manager.show_all()
 done_index = st.number_input("Mark task as Done (enter number)", min_value=0, step=1)
 if st.button("Mark Done") and 0 <= done_index < len(manager.tasks):
     manager.mark_done(done_index)
+    
+    print("---------Thanks for Using RiseList!-----------")
 
 # Footer
 st.markdown("---")
